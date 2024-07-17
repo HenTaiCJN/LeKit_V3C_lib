@@ -23,7 +23,7 @@ class sound:
         try:
             self.s_adc = ADC(self.s_pin)
         except:
-            print('读取错误，请尝试使用0号口或1号口')
+            print('读取错误，请尝试使用AD口')
             return
 
     def read(self):

@@ -2,6 +2,8 @@ import gc
 import os
 from flashbdev import bdev
 import ssd1306fontFile
+import brownout
+brownout.disable()
 
 try:
     if bdev:
@@ -15,11 +17,13 @@ gc.collect()
 with open("boot.py", "w") as f:
     f.write(
 """\
-from educore import oled
+from educore import oled,rgb
+rgb().clear()
 oled.oled.displayclear()
 oled.oled.displaytxtauto('LeKit-V3C', 24, 16)
-oled.oled.displaytxtauto('2024-3-20', 24, 32)
+oled.oled.displaytxtauto('2024-7-17', 24, 32)
 oled.oled.displayshow()
+import init
 """
     )
 if 'main.py' not in os.listdir('/'):

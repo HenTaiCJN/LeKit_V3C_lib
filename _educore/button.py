@@ -3,9 +3,10 @@ from machine import Pin
 from educore import pin
 from pins_const import ports
 
+
 class button:
-    def __init__(self,ch=None,port=None):
-        self._event_pressed =None
+    def __init__(self, ch=None, port=None):
+        self._event_pressed = None
 
         if port is not None:
             if isinstance(port, list):
@@ -16,7 +17,7 @@ class button:
             if isinstance(ch, pin):
                 self.s_pin = ch.get_pin()
             elif isinstance(ch, str):
-                self.s_pin=Pin(int(ch))
+                self.s_pin = Pin(int(ch))
             else:
                 self.s_pin = pin(ch).get_pin()
 
@@ -26,10 +27,12 @@ class button:
     @property
     def event_pressed(self):
         return self._event_pressed
+
     @event_pressed.setter
     def event_pressed(self, callback):
-        self._event_pressed=callback
+        self._event_pressed = callback
         self.s_pin.irq(trigger=Pin.IRQ_RISING, handler=self.callback)
-    def callback(self,e):
+
+    def callback(self, e):
         if self._event_pressed is not None:
             self._event_pressed()
