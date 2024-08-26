@@ -90,7 +90,6 @@ class pin:
             self.s_pin.init(self.s_pin.OUT, self.s_pin.PULL_UP)
             self.pwm = PWM(self.s_pin, freq=freq)
         self.pwm.duty(value)
-        gc.collect()
 
 
 # oled
@@ -108,7 +107,6 @@ class _oled:
         self.oled.displayclear()
         self.oled.displaytxtauto(txt, 0, 0)
         self.oled.displayshow()
-        gc.collect()
 
     def clear(self):
         self.oled.displayclear()
@@ -124,15 +122,16 @@ class speaker:
         from _educore.speaker import speaker as sp
         self.s = sp(ch=ch, port=port)
 
-    def tone(self, freq, dual=None, durl=None):
+    def tone(self, freq, dual=None, durl=None, dur=None):
         if dual is None:
-            dual = durl
+            if durl is None:
+                dual = dur
+            else:
+                dual = durl
         self.s.tone(freq=freq, durl=dual)
-        gc.collect()
 
     def stop(self):
         self.s.stop()
-        gc.collect()
 
 
 # 电机控制
@@ -146,7 +145,6 @@ class parrot:
 
     def speed(self, speed=None):
         self.p.set_speed(speed)
-        gc.collect()
 
 
 # 舵机控制
@@ -166,15 +164,12 @@ class rgb:
     def __init__(self, ch=None, num=3, port=None):
         from _educore.rgb import RGB
         self.rgb = RGB(ch=ch, num=num, port=port)
-        gc.collect()
 
     def write(self, index, r, g, b):
         self.rgb.write(index, r, g, b)
-        gc.collect()
 
     def clear(self):
         self.rgb.clear()
-        gc.collect()
 
 
 # 读取声音
@@ -227,19 +222,15 @@ class accelerometer:
         self.acc = acc(sda=sda, scl=scl, port=port)
 
     def X(self):
-        gc.collect()
         return self.acc.X
 
     def Y(self):
-        gc.collect()
         return self.acc.Y
 
     def Z(self):
-        gc.collect()
         return self.acc.Z
 
     def shake(self):
-        gc.collect()
         return self.acc.shake()
 
 
@@ -295,7 +286,6 @@ class tsd:
         self.tsd = TSD(ch=ch, port=port)
 
     def read(self):
-        gc.collect()
         return self.tsd.read()
 
 
@@ -306,7 +296,6 @@ class pressure:
         self.ps = ps(sda=sda, scl=scl, port=port)
 
     def read(self):
-        gc.collect()
         return self.ps.read()
 
 
@@ -318,10 +307,8 @@ class compass:
 
     def adjust(self):
         self.qmc.adjust()
-        gc.collect()
 
     def direction(self):
-        gc.collect()
         return self.qmc.direction()
 
     def getx(self):
@@ -369,18 +356,15 @@ class hid:
     def __init__(self, name):
         from _educore.hid import HID
         self.ble = HID(name)
-        gc.collect()
 
     def isconnected(self):
         return self.ble.isconnected()
 
     def keyboard_send(self, code):
         self.ble.keyboard_send(code)
-        gc.collect()
 
     def mouse_key(self, code):
         self.ble.mouse_key(code)
-        gc.collect()
 
     def mouse_move(self, x, y, wheel=0):
         self.ble.mouse_move(x=x, y=y, wheel=wheel)
@@ -397,12 +381,10 @@ class wifi:
     def connect(cls, ssid, psd, timeout=10000):
         cls.wc.start()
         cls.wc.connect(ssid, psd, timeout)
-        gc.collect()
 
     @classmethod
     def close(cls):
         cls.wc.close()
-        gc.collect()
 
     @classmethod
     def status(cls):
@@ -476,7 +458,7 @@ def get_dict_from_file(filename):
         dic[key] = value
 
     # 返回生成的字典
-    gc.collect()
+
     return dic
 
 
@@ -498,7 +480,6 @@ def get_dict_from_str(s):
             key, value = key_value
             result_dict[key] = value
 
-    gc.collect()
     return result_dict
 
 
@@ -520,11 +501,9 @@ class led:
 
     def on(self):
         self.led_pin.value(1)
-        gc.collect()
 
     def off(self):
         self.led_pin.value(0)
-        gc.collect()
 
 
 class singlebutton:
@@ -543,7 +522,7 @@ class singlebutton:
         self.s_pin.init(mode=Pin.IN, pull=-1)
 
     def read(self):
-        gc.collect()
+
         return self.s_pin.value()
 
 
@@ -566,7 +545,7 @@ class fourfoldbut:
         self.adc_sig.atten(ADC.ATTN_11DB)
 
     def read(self):
-        gc.collect()
+
         return self.adc_sig.read()
 
     def button(self):
@@ -708,7 +687,7 @@ class IR:
             print("un-existed function")
 
     def read(self):
-        gc.collect()
+
         return self.cmd
 
 
@@ -768,11 +747,11 @@ class apds:
             return None
 
     def readProximity(self):
-        gc.collect()
+
         return self.apds.readProximity()
 
     def readLight(self):
-        gc.collect()
+
         return self.apds.readAmbientLight()
 
 
@@ -800,11 +779,11 @@ class linefinder:
         self.s2_pin.init(mode=Pin.IN, pull=-1)
 
     def reads1(self):
-        gc.collect()
+
         return self.s1_pin.value()
 
     def reads2(self):
-        gc.collect()
+
         return self.s2_pin.value()
 
 
@@ -854,17 +833,17 @@ class ps2but(object):
 
     def getX(self):
         self.read()
-        gc.collect()
+
         return self.data['X']
 
     def getY(self):
         self.read()
-        gc.collect()
+
         return self.data['Y']
 
     def getBt(self):
         self.read()
-        gc.collect()
+
         return self.data['Button']
 
 
@@ -893,8 +872,27 @@ class dig_display:
 
     def show(self, string):
         self.smg.show(str(string))
-        gc.collect()
 
     def showscroll(self, string):
         self.smg.scroll(str(string))
-        gc.collect()
+
+
+class radio:
+    def __init__(self, code):
+        from _educore.radio import Radio
+        self.r = Radio(code)
+
+    def send(self, content):
+        self.r.send(content)
+
+    def on(self):
+        self.r.on()
+
+    def off(self):
+        self.r.off()
+
+    def setcb(self, func):
+        self.r.setcb(func)
+
+    def recv(self):
+        return self.r.recv()

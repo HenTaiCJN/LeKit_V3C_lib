@@ -2,6 +2,11 @@ from machine import Pin, PWM
 
 from educore import pin
 from pins_const import ports
+import time
+
+
+def linear_map(x, in_min, in_max, out_min, out_max):
+    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 
 class parrot:
@@ -11,6 +16,7 @@ class parrot:
     M4 = 4
 
     def __init__(self, ch=None, in0=None, in1=None):
+        time.sleep(1)
         self.ch = ch
         self.in0 = in0
         self.in1 = in1
@@ -62,10 +68,16 @@ class parrot:
         self.motor_pwm = PWM(self.motor_pin2, freq=5000)
         if self.speed > 0:
             self.motor_pin1.value(1)
-            self.motor_pwm.duty(int((100 - self.speed) * 10.23))
+            self.motor_pwm.duty(0)
+            time.sleep_ms(100)
+            mapped_value = linear_map(self.speed, 1, 100, 45, 96)
+            self.motor_pwm.duty(int((100 - mapped_value) * 10.23))
         elif self.speed < 0:
             self.motor_pin1.value(0)
-            self.motor_pwm.duty(int(-self.speed * 10.23))
+            self.motor_pwm.duty(1023)
+            time.sleep_ms(100)
+            mapped_value = linear_map(self.speed, -1, -100, -66, -100)
+            self.motor_pwm.duty(int(-mapped_value * 10.23))
         else:
             self.motor_pin1.value(0)
             self.motor_pwm.duty(0)

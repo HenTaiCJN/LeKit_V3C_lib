@@ -21,7 +21,7 @@ from educore import oled,rgb
 rgb().clear()
 oled.oled.displayclear()
 oled.oled.displaytxtauto('LeKit-V3C', 24, 16)
-oled.oled.displaytxtauto('2024-7-17', 24, 32)
+oled.oled.displaytxtauto('2024-8-22', 24, 32)
 oled.oled.displayshow()
 import init
 """
